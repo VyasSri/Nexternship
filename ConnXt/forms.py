@@ -25,7 +25,8 @@ class JobForm(ModelForm):
         widgets = {
             'job_title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Job Title'}),
             'job_hours': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Approximate Hours/Week'}),
-            'job_skills': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Skills Required'}),
-            'job_description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Job Description'}),
-            'company': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company Name'}),
+            'job_skills': forms.Textarea(attrs={'class': 'form-control',  'rows': 3, 'placeholder': 'Skills Required'}),
+            'job_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Job Description'}),
+            'company': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Company Name'}),
         }
+

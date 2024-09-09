@@ -1,6 +1,9 @@
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
 from .forms import StudentForm, JobForm
 from .models import JobPosting
+from django.http import HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect
 
 
 # Create your views here.
@@ -16,7 +19,7 @@ def profile(response):
     if response.method == "POST":
         success_msg = None
         error_msg = None
-        form = StudentForm(response.POST,)
+        form = StudentForm(response.POST, )
         if form.is_valid():
             form.save()
             success_msg = "Profile Saved Successfully"
@@ -29,23 +32,23 @@ def profile(response):
     return render(response, "profile.html", {"form": form})
 
 
-def employer(response):
+def employer(request):
     success_msg = None
     error_msg = None
-    if response.method == 'POST':
-        form = JobForm(response.POST)
+    form = JobForm()  # Initialize the form at the start
+
+    if request.method == 'POST':
+        form = JobForm(request.POST)
         if form.is_valid():
-            form = form.save(commit=False)
-            form.published_by = response.user
-            form.save()
+            job = form.save(commit=False)
+            job.user = request.user  # Assign the user who posted the job
+            job.save()
             success_msg = "Job Posted Successfully"
-            return render(response, 'employerhome.html', {'form': form, "success_msg": success_msg})
+            form = JobForm()  # Reinitialize the form after successful submission
         else:
             error_msg = "Form is invalid. Please correct the errors below."
-            return render(response, 'employerhome.html', {'form': form, "error_msg": error_msg})
-    else:
-        form = JobForm()
-    return render(response, 'employerhome.html', {'form': form})
+
+    return render(request, 'employerhome.html', {'form': form, "success_msg": success_msg, "error_msg": error_msg})
 
 
 def jobs(request):
@@ -67,3 +70,43 @@ def studenterror(request):
 
 def employererror(request):
     return render(request, 'employererror.html')
+
+
+def edit_job(request, id):
+    job = get_object_or_404(JobPosting, id=id)
+
+    # Ensure the current user is the one who posted the job
+    if job.user != request.user:
+        return HttpResponseForbidden("You are not allowed to edit this job.")
+
+    if request.method == 'POST':
+        form = JobForm(request.POST, instance=job)
+        if form.is_valid():
+            form.save()
+            return redirect('/jobedit')  # Replace 'job_list' with your job list view or URL name
+    else:
+        form = JobForm(instance=job)
+
+    return render(request, 'edit_job.html', {'form': form, 'job': job})
+
+
+@login_required
+
+@login_required
+def delete_job(request, id):
+    job = get_object_or_404(JobPosting, id=id)
+
+    # Ensure the current user is the one who posted the job
+    if job.user != request.user:
+        return HttpResponseForbidden("You are not allowed to delete this job.")
+
+    if request.method == 'POST':
+        job.delete()  # Deletes the job from the database
+        return redirect('/jobedit')  # Redirect back to the list of jobs
+
+    return render(request, 'confirm_delete.html', {'job': job})
+
+@login_required
+def jobedit(request):
+    jobs = JobPosting.objects.filter(user=request.user)  # Only show jobs posted by the logged-in user
+    return render(request, 'jobedit.html', {'jobs': jobs})
