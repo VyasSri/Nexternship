@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
 
 from .forms import StudentForm, JobForm
-from .models import JobPosting
+from .models import JobPosting, StudentInfo, JobApplication
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
+
+
 
 
 # Create your views here.
@@ -12,8 +14,23 @@ def home(request):
 
 
 def talent(request):
-    return render(request, 'talent.html')
+    if request.method == 'POST' and 'application_id' in request.POST:
+        application_id = request.POST.get('application_id')
+        try:
+            # Attempt to retrieve and delete the job application
+            application = get_object_or_404(JobApplication, id=application_id)
+            application.delete()  # Delete the application from the database
+            return redirect('talent')  # Reload the talent pool page after deletion
+        except JobApplication.DoesNotExist:
+            # If for some reason the application wasn't found, return an error
+            return render(request, 'talent.html', {
+                'job_applications': JobApplication.objects.all(),
+                'message': 'Application not found or already deleted.'
+            })
 
+        # For GET requests, display the current job applications
+    job_applications = JobApplication.objects.all()
+    return render(request, 'talent.html', {'job_applications': job_applications})
 
 def profile(response):
     if response.method == "POST":
@@ -53,8 +70,27 @@ def employer(request):
 
 def jobs(request):
     job_postings = JobPosting.objects.all()
-    return render(request, 'employers.html', {'job_postings': job_postings})
+    job_postings = JobPosting.objects.all()  # Get all job postings
+    message = None  # Initialize message
 
+    # Get student info related to the logged-in user (assuming 1-to-1 relationship with User)
+    student_info = StudentInfo.objects.filter(student_email=request.user.email).first()
+
+    # Check if the user is applying for a job
+    if request.method == 'POST' and 'apply_job_id' in request.POST:
+        job_id = request.POST.get('apply_job_id')
+        job = get_object_or_404(JobPosting, id=job_id)
+
+        # Check if the student has filled in their profile
+        if student_info and student_info.student_skills and student_info.student_experience:
+            # Save the job application
+            JobApplication.objects.create(job=job, student=student_info)
+            message = "Application Successful"
+        else:
+            # If profile is incomplete, display an error message
+            message = "Application Unsuccessful, Double Check your Profile"
+
+    return render(request, 'employers.html', {'job_postings': job_postings, 'message': message})
 
 def studentdash(request):
     return render(request, 'studentdashboard.html')
@@ -90,7 +126,6 @@ def edit_job(request, id):
     return render(request, 'edit_job.html', {'form': form, 'job': job})
 
 
-@login_required
 
 @login_required
 def delete_job(request, id):

@@ -21,3 +21,10 @@ class JobPosting(models.Model):
     company = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
 
+class JobApplication(models.Model):
+    job = models.ForeignKey(JobPosting, on_delete=models.CASCADE)
+    student = models.ForeignKey(StudentInfo, on_delete=models.CASCADE)
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.student.student_name} applied to {self.job.job_title}'
