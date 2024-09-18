@@ -1,0 +1,105 @@
+
+{% extends "base.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+{% block content %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Available Opportunities - Brand</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
+    <link rel="stylesheet" href="{% static 'css/swiper-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bs-theme-overrides.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Simple-Slider-swiper-bundle.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Simple-Slider.css' %}">
+    <style>
+        .card {
+            margin-bottom: 30px;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .card-title {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .card-text {
+            margin-bottom: 10px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .container h1 {
+            margin-top: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Available Opportunities</h1>
+
+        <!-- Display success or error message -->
+        {% if message %}
+        <div class="alert alert-info">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        <div class="row">
+            {% for job in job_postings %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-header">{{ job.job_title }}</h5>
+                        <h6 class="card-title">Company: {{ job.company }}</h6>
+                        <p class="card-text">Approximate Hours/Week: {{ job.job_hours }}</p>
+                        <p class="card-text">{{ job.job_description }}</p>
+                        <p class="card-text">Skills Required: {{ job.job_skills }}</p>
+                        <p class="published-by">Published by: {{ job.user.username }}</p>
+                        <p class="publish-by">Company Email(Contact to Apply and Set Up Emails): {{ job.user.email }}</p>
+                        <!-- Apply Button: sends job_id in the POST request -->
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="apply_job_id" value="{{ job.id }}">
+                            <button type="submit" class="btn btn-success">Apply</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/bold-and-dark.js' %}"></script>
+</body>
+{% endblock %}
+</html>
