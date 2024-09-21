@@ -18,15 +18,18 @@ class StudentForm(ModelForm):
         }
 
 
-class JobForm(ModelForm):
+class JobForm(forms.ModelForm):
     class Meta:
         model = JobPosting
-        fields = ['job_title', 'job_hours', 'job_skills', 'job_description', 'company']
+        fields = ['job_title', 'job_hours', 'job_skills', 'job_description', 'company', 'job_date', 'job_location', 'job_capacity']
         widgets = {
-            'job_title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Job Title'}),
-            'job_hours': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Approximate Hours/Week'}),
-            'job_skills': forms.Textarea(attrs={'class': 'form-control',  'rows': 3, 'placeholder': 'Skills Required'}),
-            'job_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Job Description'}),
+            'job_title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Workshop Title'}),
+            'job_hours': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Hours per Week'}),
+            'job_skills': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Required Skills'}),
+            'job_description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Job Description'}),
             'company': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Company Name'}),
+            'job_date': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Workshop Date'}),
+            'job_location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Workshop Location'}),
+            'job_capacity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Workshop Capacity'})
         }
 

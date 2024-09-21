@@ -72,7 +72,7 @@
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
                     <p class="fw-bold text-success mb-2">Our Services</p>
                     <h2 class="fw-bold">Talent Pool</h2>
-                    <p class="text-muted">View the best candidates who applied for your jobs</p>
+                    <p class="text-muted">View the best candidates who applied for your workshops</p>
                 </div>
             </div>
 
@@ -90,16 +90,18 @@
                     <div class="card">
                         <div class="card-header">{{ application.student.student_name }}</div>
                         <div class="card-body">
-                            <h6 class="card-title">Skills: {{ application.student.student_skills }}</h6>
-                            <p class="card-text"><strong>Experience:</strong> {{ application.student.student_experience }}</p>
-                            <p class="card-text"><strong>Email:</strong> {{ application.student.student_email }}</p>
-                            <p class="card-text"><strong>Applied for:</strong> {{ application.job.job_title }}</p>
+                            <h6 class="card-text">Workshop: {{ application.job.job_title }}</h6>
+                            <p class="card-text"><strong>Email: </strong> {{ application.student.student_email }}</p>
+                            <p class="card-text"><strong>Grade: </strong> {{ application.student.student_grade }}</p>
+                            <p class="card-text"><strong>Technical Skills: </strong> {{ application.student.student_skills }}</p>
+                            <p class="card-text"><strong>Student Experience: </strong> {{ application.student.student_experience }}</p>
 
-                            <!-- Mark as Considered Button -->
+                            <!-- Accept or Reject Buttons -->
                             <form method="POST" style="margin-top: 15px;">
                                 {% csrf_token %}
                                 <input type="hidden" name="application_id" value="{{ application.id }}">
-                                <button type="submit" class="btn btn-outline-primary">Mark as Considered</button>
+                                <button type="submit" name="action" value="accept" class="btn btn-success">Accept</button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
                             </form>
                         </div>
                     </div>
@@ -112,6 +114,8 @@
     </section>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/bold-and-dark.js' %}"></script>
+    <script src="{% static 'js/Simple-Slider-swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/Simple-Slider.js' %}"></script>
 </body>
 {% endblock %}
 </html>

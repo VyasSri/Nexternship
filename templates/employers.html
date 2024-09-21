@@ -80,12 +80,13 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-header">{{ job.job_title }}</h5>
-                        <h6 class="card-title">Company: {{ job.company }}</h6>
-                        <p class="card-text">Approximate Hours/Week: {{ job.job_hours }}</p>
+                        <p class="published-by">Published by: {{ job.user.username }}</p>
+                        <p class="card-text">Workshop Duration: {{ job.job_hours }}</p>
                         <p class="card-text">{{ job.job_description }}</p>
                         <p class="card-text">Skills Required: {{ job.job_skills }}</p>
-                        <p class="published-by">Published by: {{ job.user.username }}</p>
-                        <p class="publish-by">Company Email(Contact to Apply and Set Up Emails): {{ job.user.email }}</p>
+                        <p class="card-text">Workshop Date: {{ job.job_date }}</p>
+                        <p class="card-text">Workshop Location: {{ job.job_location }}</p>
+
                         <!-- Apply Button: sends job_id in the POST request -->
                         <form method="POST">
                             {% csrf_token %}
@@ -100,6 +101,8 @@
     </div>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/bold-and-dark.js' %}"></script>
+    <script src="{% static 'js/Simple-Slider-swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/Simple-Slider.js' %}"></script>
 </body>
 {% endblock %}
 </html>

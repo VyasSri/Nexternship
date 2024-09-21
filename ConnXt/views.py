@@ -12,25 +12,35 @@ from django.shortcuts import render, get_object_or_404, redirect
 def home(request):
     return render(request, 'index.html')
 
-
 def talent(request):
+    message = ""
+    
     if request.method == 'POST' and 'application_id' in request.POST:
         application_id = request.POST.get('application_id')
-        try:
-            # Attempt to retrieve and delete the job application
-            application = get_object_or_404(JobApplication, id=application_id)
-            application.delete()  # Delete the application from the database
-            return redirect('talent')  # Reload the talent pool page after deletion
-        except JobApplication.DoesNotExist:
-            # If for some reason the application wasn't found, return an error
-            return render(request, 'talent.html', {
-                'job_applications': JobApplication.objects.all(),
-                'message': 'Application not found or already deleted.'
-            })
+        action = request.POST.get('action')
+        application = get_object_or_404(JobApplication, id=application_id)
+        
+        # Accept or Reject the application
+        if action == 'accept':
+            application.accepted = True
+            message = f"{application.student.student_name} has been accepted."
+        elif action == 'reject':
+            application.rejected = True
+            message = f"{application.student.student_name} has been rejected."
+        
+        application.save()
+        
+        # Redirect to the same page with a message to prevent form resubmission
+        return redirect('talent')
 
-        # For GET requests, display the current job applications
-    job_applications = JobApplication.objects.all()
-    return render(request, 'talent.html', {'job_applications': job_applications})
+    # Only show applications that are still pending (not accepted or rejected)
+    job_applications = JobApplication.objects.filter(accepted=False, rejected=False)
+    
+    return render(request, 'talent.html', {
+        'job_applications': job_applications,
+        'message': message,
+    })
+
 
 def profile(response):
     if response.method == "POST":
@@ -52,21 +62,25 @@ def profile(response):
 def employer(request):
     success_msg = None
     error_msg = None
-    form = JobForm()  # Initialize the form at the start
 
     if request.method == 'POST':
         form = JobForm(request.POST)
         if form.is_valid():
+            # Save the job posting
             job = form.save(commit=False)
-            job.user = request.user  # Assign the user who posted the job
+            job.user = request.user  # Attach the current logged-in user as the job poster
             job.save()
             success_msg = "Job Posted Successfully"
-            form = JobForm()  # Reinitialize the form after successful submission
+            form = JobForm()  # Reset the form after successful submission
         else:
+            # If form is invalid, show the error message
             error_msg = "Form is invalid. Please correct the errors below."
+    else:
+        # If it's not a POST request, show a blank form
+        form = JobForm()
 
-    return render(request, 'employerhome.html', {'form': form, "success_msg": success_msg, "error_msg": error_msg})
-
+    # Render the page with success or error messages
+    return render(request, 'employerhome.html', {'form': form, 'success_msg': success_msg, 'error_msg': error_msg})
 
 def jobs(request):
     job_postings = JobPosting.objects.all()
@@ -145,3 +159,11 @@ def delete_job(request, id):
 def jobedit(request):
     jobs = JobPosting.objects.filter(user=request.user)  # Only show jobs posted by the logged-in user
     return render(request, 'jobedit.html', {'jobs': jobs})
+
+@login_required
+def employer_list(request):
+    # Fetch all job applications where 'accepted' is True
+    accepted_applications = JobApplication.objects.filter(accepted=True)
+
+    # Pass the accepted applications to the template
+    return render(request, 'employer_list.html', {'accepted_applications': accepted_applications})

@@ -41,9 +41,6 @@
                                     <form method="post">
                                         {% csrf_token %}
                                         <div class="mb-3">
-                                            {{ form.company }}
-                                        </div>
-                                        <div class="mb-3">
                                             {{ form.job_title }}
                                         </div>
                                         <div class="mb-3">
@@ -55,6 +52,12 @@
                                         <div class="mb-3">
                                             {{ form.job_description }}
                                         </div>
+                                        <div class="mb-3">
+                                            {{ form.job_location }}
+                                        </div>
+                                        <div class="mb-3">
+                                            {{ form.job_date }}
+                                        </div>
                                         <div class="d-grid">
                                             <button class="btn btn-primary shadow d-block w-100" type="submit">Submit</button>
                                         </div>
@@ -63,30 +66,43 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-md-8 col-lg-6 col-xl-5 col-xxl-4">
-                            <div class="card mb-5">
-                                <div class="card-body p-sm-5">
-                                    <h2 class="text-center mb-4">Find Local Talent</h2>
-                                    <p>Click here to find out about students who have applied to your jobs! You can view their interests, skills, and more!</p>
-                                    <button class="btn btn-primary d-block w-100" type="button" onclick="location.href='{% url 'talent' %}'">Student Information</button>
+
+                    <!-- Row for buttons side by side -->
+                    <div class="row">
+                        <!-- Talent Pool Section -->
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-body text-center">
+                                    <h2 class="mb-3">Find Local Talent</h2>
+                                    <p>Click here to find out about students who have applied to your jobs!</p>
+                                    <button class="btn btn-primary w-100" type="button" onclick="location.href='{% url 'talent' %}'">View Talent Pool</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Edit Jobs Section -->
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-body text-center">
+                                    <h2 class="mb-3">Edit Your Workshops</h2>
+                                    <p>Click here to edit your posted workshops. You can modify or remove any of your workshops postings.</p>
+                                    <button class="btn btn-primary w-100" type="button" onclick="location.href='{% url 'jobedit' %}'">Edit Jobs</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- View Accepted Section -->
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-body text-center">
+                                    <h2 class="mb-3">View Candidates</h2>
+                                    <p>Click here to view the list of accepted candidates for your jobs.</p>
+                                    <button class="btn btn-primary w-100" type="button" onclick="location.href='{% url 'employer_list' %}'">View Accepted</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- New Edit Jobs Button Section -->
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-md-8 col-lg-6 col-xl-5 col-xxl-4">
-                            <div class="card mb-5">
-                                <div class="card-body p-sm-5">
-                                    <h2 class="text-center mb-4">Edit Your Jobs</h2>
-                                    <p>Click here to edit your posted jobs. You can modify or remove any of your existing job postings.</p>
-                                    <button class="btn btn-primary d-block w-100" type="button" onclick="location.href='{% url 'jobedit' %}'">Edit Jobs</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
         </div>
