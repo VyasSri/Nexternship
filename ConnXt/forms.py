@@ -26,7 +26,7 @@ class JobForm(forms.ModelForm):
             'job_title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Workshop Title'}),
             'job_hours': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Hours per Week'}),
             'job_skills': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Required Skills'}),
-            'job_description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Job Description'}),
+            'job_description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Workshop Description'}),
             'company': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Company Name'}),
             'job_date': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Workshop Date'}),
             'job_location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Workshop Location'}),
