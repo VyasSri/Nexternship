@@ -11,6 +11,7 @@ class StudentInfo(models.Model):
     student_skills = models.CharField(max_length=200)
     student_experience = models.CharField(max_length=200)
     student_info = models.CharField(max_length=200)
+    student_resume = models.CharField(max_length=200)
     
 
 class JobPosting(models.Model):

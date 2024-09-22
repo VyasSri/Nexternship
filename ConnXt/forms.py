@@ -7,7 +7,7 @@ class StudentForm(ModelForm):
     class Meta:
         model = StudentInfo
         fields = ['student_name', 'student_grade', 'student_email', 'student_skills', 'student_experience',
-                  'student_info']
+                  'student_info', 'student_resume']
         widgets = {
             'student_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
             'student_grade': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Grade'}),
@@ -15,6 +15,7 @@ class StudentForm(ModelForm):
             'student_skills': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Technical Skills'}),
             'student_experience': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Work Experience'}),
             'student_info': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Additional Info'}),
+            'student_resume': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Resume Link'})
         }
 
 
