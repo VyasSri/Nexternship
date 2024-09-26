@@ -49,34 +49,45 @@ def profile(request):
     success_msg = None
     error_msg = None
 
-    # Fetch the student's existing profile based on their email (assuming it's 1-to-1 with User)
-    student_info = StudentInfo.objects.filter(student_email=request.user.email).first()
+    # Fetch the student's existing profile based on the logged-in user
+    student_info, created = StudentInfo.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
-        # If the student has a profile, update it. If not, create a new one.
-        if student_info:
-            form = StudentForm(request.POST, instance=student_info)
-        else:
-            form = StudentForm(request.POST)
+        # Use the existing profile if it exists, otherwise create a new one
+        form = StudentForm(request.POST, instance=student_info)
 
         if form.is_valid():
-            form.save()
-            success_msg = "Profile updated successfully!" if student_info else "Profile created successfully!"
+            # Save the form data but don't commit to the database yet
+            student_info = form.save(commit=False)
+
+            # Check if all required fields are filled to mark the profile as complete
+            if all([
+                student_info.student_name, student_info.student_grade,  # Ensure student_grade is filled
+                student_info.student_email, student_info.student_skills,
+                student_info.student_experience, student_info.student_resume
+            ]):
+                student_info.profile_complete = True
+            else:
+                student_info.profile_complete = False
+
+            # Save the profile to the database
+            student_info.save()
+
+            success_msg = "Profile updated successfully!"
         else:
             error_msg = "Form is invalid. Please correct the errors below."
 
     else:
-        # If it's a GET request, either show the form with existing data or a blank form
-        if student_info:
-            form = StudentForm(instance=student_info)
-        else:
-            form = StudentForm()
+        # If it's a GET request, pre-populate the form with the student's current info
+        form = StudentForm(instance=student_info)
 
     return render(request, "profile.html", {
         'form': form,
-        'success_msg': success_msg,
-        'error_msg': error_msg
+        'success_msg': success_msg if success_msg else None,
+        'error_msg': error_msg if error_msg else None
     })
+
+
 
 
 def employer(request):
@@ -102,38 +113,56 @@ def employer(request):
     # Render the page with success or error messages
     return render(request, 'employerhome.html', {'form': form, 'success_msg': success_msg, 'error_msg': error_msg})
 
+
 def jobs(request):
-    job_postings = JobPosting.objects.all()  # Get all job postings
-    message = None  # Initialize message
+    job_postings = JobPosting.objects.all()
+    message = None
 
-    # Get student info related to the logged-in user (assuming 1-to-1 relationship with User)
-    student_info = StudentInfo.objects.filter(student_email=request.user.email).first()
+    # Fetch the student's info based on the logged-in user
+    student_info = StudentInfo.objects.filter(user=request.user).first()
 
-    # Add an applied status to each job
+    job_data = []
     for job in job_postings:
-        # Check if the student has already applied for this job
-        job.already_applied = JobApplication.objects.filter(job=job, student=student_info).exists()
+        # Check if the student has already applied to the job
+        applied = JobApplication.objects.filter(job=job, student=student_info).exists() if student_info else False
+        
+        # Check if the job has available capacity
+        total_applied = JobApplication.objects.filter(job=job).count()
+        can_apply = total_applied < job.job_capacity
+        
+        job_data.append({
+            'job': job,
+            'has_applied': applied,
+            'can_apply_flag': can_apply
+        })
 
-    # Check if the user is applying for a job
+    # Handle job application logic
     if request.method == 'POST' and 'apply_job_id' in request.POST:
         job_id = request.POST.get('apply_job_id')
         job = get_object_or_404(JobPosting, id=job_id)
 
-        if job.already_applied:
-            message = "You have already applied for this job."
+        # Conditions before applying to a job
+        if not student_info or not student_info.profile_complete:
+            message = "You need to complete your profile before applying."
+        elif any(jd['has_applied'] for jd in job_data if jd['job'].id == job.id):
+            message = "You have already applied for this opportunity."
+        elif not any(jd['can_apply_flag'] for jd in job_data if jd['job'].id == job.id):
+            message = "Workshop capacity reached."
         else:
-            # Check if the student has filled in their profile
-            if student_info and student_info.student_skills and student_info.student_experience:
-                # Save the job application
-                JobApplication.objects.create(job=job, student=student_info)
-                message = "Application Successful"
-            else:
-                message = "Application Unsuccessful, Double Check your Profile"
+            # Save the job application
+            JobApplication.objects.create(job=job, student=student_info)
+            message = "Application Successful."
 
     return render(request, 'employers.html', {
-        'job_postings': job_postings,
+        'job_data': job_data,
         'message': message,
+        'profile_exists': student_info.profile_complete if student_info else False,  # Simplified check
     })
+
+
+
+
+
 
 def studentdash(request):
     return render(request, 'studentdashboard.html')
@@ -153,22 +182,27 @@ def employererror(request):
 
 def edit_job(request, id):
     job = get_object_or_404(JobPosting, id=id)
-
     # Ensure the current user is the one who posted the job
     if job.user != request.user:
-        return HttpResponseForbidden("You are not allowed to edit this job.")
-
+        return HttpResponseForbidden("You are not allowed to edit this workshop.")
+    success_msg = None
+    error_msg = None
     if request.method == 'POST':
         form = JobForm(request.POST, instance=job)
         if form.is_valid():
             form.save()
-            return redirect('/jobedit')  # Replace 'job_list' with your job list view or URL name
+            success_msg = "Job updated successfully."
+        else:
+            # Debug the form errors
+            print(form.errors)
+            error_msg = "There was an error in updating the workshop. Please check the form for errors."
     else:
         form = JobForm(instance=job)
-
-    return render(request, 'edit_job.html', {'form': form, 'job': job})
-
-
+    return render(request, 'edit_job.html', {
+        'form': form,
+        'success_msg': success_msg,
+        'error_msg': error_msg
+    })
 
 @login_required
 def delete_job(request, id):
@@ -176,7 +210,7 @@ def delete_job(request, id):
 
     # Ensure the current user is the one who posted the job
     if job.user != request.user:
-        return HttpResponseForbidden("You are not allowed to delete this job.")
+        return HttpResponseForbidden("You are not allowed to delete this workshop.")
 
     if request.method == 'POST':
         job.delete()  # Deletes the job from the database
