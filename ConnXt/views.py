@@ -227,6 +227,7 @@ def jobedit(request):
 def employer_list(request):
     # Fetch all job applications where 'accepted' is True
     accepted_applications = JobApplication.objects.filter(accepted=True)
+    rejected_applications = JobApplication.objects.filter(rejected=True)
 
     # Pass the accepted applications to the template
-    return render(request, 'employer_list.html', {'accepted_applications': accepted_applications})
+    return render(request, 'employer_list.html', {'accepted_applications': accepted_applications,'rejected_applications': rejected_applications})
