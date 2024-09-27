@@ -1,4 +1,6 @@
-#!/Users/vyassriman/Nexternship/.venv/bin/python
+#!/bin/sh
+'''exec' "/home/siddharth/Visual Studio Code Projects/Nexternship/.venv/bin/python" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys

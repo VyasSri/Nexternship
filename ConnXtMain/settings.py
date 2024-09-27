@@ -15,7 +15,7 @@ from pathlib import Path
 
 from django.conf.global_settings import CSRF_TRUSTED_ORIGINS
 from django.contrib.messages import constants as messages
-
+import dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,11 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key-for-development')
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+if (os.environ.get("SERVER") != "1"):
+    dotenv.load_dotenv()
+SECRET_KEY = os.environ.get('SECRET_KEY')
+DEBUG = int(os.environ.get("DEBUG"))
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(',')
 
 
 
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ConnXt',
-    'members',
+    'members'
 ]
 
 MIDDLEWARE = [
@@ -88,6 +88,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ConnXtMain.wsgi.application'
 
 CSRF_ALLOWED_ORIGINS = 'https://nexternship.com'
+CSRF_TRUSTED_ORIGINS = ["https://nexternship.com", "http://localhost:8000"]
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -138,13 +139,11 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
