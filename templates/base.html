@@ -72,8 +72,12 @@
                 <div class="col-sm-4 col-md-3 text-center text-lg-start d-flex flex-column">
                     <h3 class="fs-6 fw-bold">Students</h3>
                     <ul class="list-unstyled">
-                        <li><a href= "{% if not user.is_staff %}/profile{% else %}/employererror{% endif %}"> Build your Profile</a></li>
-                    </ul>
+                        {% if user.is_authenticated %}
+                            <li><a href= "{% if not user.is_staff %}/profile{% else %}/employererror{% endif %}"> Build your Profile</a></li>
+                        {% else %}
+                            <li><a href="/members/signup">Sign Up</a></li>
+                        {% endif %}
+                        </ul>
                 </div>
                 <div class="col-lg-3 text-center text-lg-start d-flex flex-column align-items-center order-first align-items-lg-start order-lg-last">
                     <div class="fw-bold d-flex align-items-center mb-2">
