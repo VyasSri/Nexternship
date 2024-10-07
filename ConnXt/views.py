@@ -231,3 +231,9 @@ def employer_list(request):
 
     # Pass the accepted applications to the template
     return render(request, 'employer_list.html', {'accepted_applications': accepted_applications,'rejected_applications': rejected_applications})
+
+def studentinstructions(request):
+    return render(request, 'studentinstructions.html')
+
+def employerinstructions(request):
+    return render(request, 'employerinstructions.html')

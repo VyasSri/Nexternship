@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+{% block content %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Student Instructions</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
+    <link rel="stylesheet" href="{% static 'css/swiper-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bs-theme-overrides.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Simple-Slider-swiper-bundle.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Simple-Slider.css' %}">
+    <style>
+        .centered-content {
+            text-align: center;
+        }
+        .instructions-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="fw-bold">How to Get Started as a Student</h1>
+            </div>
+            <div class="col-lg-8 mx-auto text-center"></div>
+            </div>
+        </div>
+
+        <div class="instructions-container">
+            <div class="mb-4">
+                <h4 class="centered-content">Step 1: Build Your Profile</h4>
+                <p class="centered-content">Start by creating a compelling profile that highlights your skills, experiences, and interests. This helps potential employers match you with workshops suited to your goals.</p>
+            </div>
+            <div class="mb-4">
+                <h4 class="centered-content">Step 2: Explore and Apply for Workshops</h4>
+                <p class="centered-content">Browse through various industry workshops that pique your interest. Carefully review the descriptions and apply to those that align with your learning objectives and career goals.</p>
+            </div>
+            <div class="mb-4">
+                <h4 class="centered-content">Step 3: Stay Engaged and Monitor Your Applications</h4>
+                <p class="centered-content">Once you’ve applied for workshops, stay updated by checking your dashboard regularly. Employers may reach out with offers or requests for more information, so be ready to respond.</p>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col text-center">
+                <a href="/" class="btn btn-primary">Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/bold-and-dark.js' %}"></script>
+    <script src="{% static 'js/Simple-Slider-swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/Simple-Slider.js' %}"></script>
+</body>
+{% endblock %}
+</html>
